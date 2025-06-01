@@ -14,21 +14,16 @@ app.use(cors());
 const REDIS_REST_URL = process.env.REDIS_REST_URL;
 const REDIS_TOKEN = process.env.REDIS_TOKEN;
 
-app.get("/counter", async (req, res) => {
-    const response = await fetch(`${REDIS_REST_URL}/get/counter`, {
-        headers: { Authorization: `Bearer ${REDIS_TOKEN}` }
+app.get("/score/:player", async (req, res) => {
+    const { player } = req.params;
+    const response = await fetch(`${process.env.REDIS_REST_URL}/get/score:${player}`, {
+        headers: {
+            Authorization: `Bearer ${process.env.REDIS_TOKEN}`,
+        },
     });
-    const data = await response.json();
-    res.json({ count: data.result ?? 0 });
-});
 
-app.post("/increment", async (req, res) => {
-    const response = await fetch(`${REDIS_REST_URL}/incr/counter`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${REDIS_TOKEN}` }
-    });
     const data = await response.json();
-    res.json({ count: data.result });
+    res.json({ score: Number(data.result) || 0 });
 });
 
 app.post("/log-event", express.json(), async (req, res) => {

@@ -64,6 +64,30 @@ function App() {
         return (event);
     }
 
+    function GetPlayerScore1() {
+        useEffect(() => {
+            fetch("http://localhost:3001/score/1")
+                .then((res) => res.json())
+                .then((data) => newScore1(data.score));
+        }, []);
+    }
+
+    function GetPlayerScore2() {
+        useEffect(() => {
+            fetch("http://localhost:3001/score/2")
+                .then((res) => res.json())
+                .then((data) => newScore2(data.score));
+        }, []);
+    }
+
+    const updateScore = async (player, score) => {
+        await fetch("http://localhost:3001/log-event", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({player, score})
+        })
+    }
+
     const createCowEvent = async (player, score, action) => {
         await fetch("http://localhost:3001/log-event", {
             method: "POST",
