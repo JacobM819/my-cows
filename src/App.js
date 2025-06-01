@@ -1,25 +1,37 @@
-import Button from 'react-bootstrap/Button'
-
+import Button from 'react-bootstrap/Button';
 import { useState } from 'react';
+import { useEffect } from 'react';
 import './App.css';
 
 function App() {
 
-    const [score1, newScore1] = useState(0);
-    const [score2, newScore2] = useState(0);
+    const [score1, newScore1] = useState();
+    const [score2, newScore2] = useState();
 
-    function createLog(name, operation, new_score) {
-        return undefined
+    useEffect(() => {
+        console.log("Data fetched!");
+        fetchInitialScore();
+    }, []);
+
+    async function fetchInitialScore() {
+        const res = await fetch("http://localhost:3001/latest-event");
+        const data = await res.json();
+
+        if (typeof data?.event?.score === "number") {
+            newScore1(data.event.score);
+        }
     }
 
     function addCow(player) {
         if (player === 1) {
             newScore1(score1+1);
+            createCowEvent(player, score1+1, "claim");
         } else if (player === 2) {
-            newScore2(score2+2)
+            newScore2(score2+1)
         }
         return undefined;
     }
+
     function ripCow(player) {
         if (player === 1) {
             newScore1(0);
@@ -36,6 +48,29 @@ function App() {
         }
         return undefined;
     }
+
+    function GetLatestCowEvent() {
+        const [event, setEvent] = useState(null);
+
+        useEffect(() => {
+            fetch("http://localhost:3001/latest-event")
+                .then((res) => res.json())
+                .then((data) => setEvent(data.event))
+                .catch((err) => console.error("Failed to fetch event:", err));
+        }, []);
+
+        if (!event) return undefined;
+
+        return (event);
+    }
+
+    const createCowEvent = async (player, score, action) => {
+        await fetch("http://localhost:3001/log-event", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ player, score, action }),
+        });
+    };
 
     return (
         <header className={'d-flex justify-content-center align-items-center'} style={{ height: '100vh' }}>
@@ -66,8 +101,6 @@ function App() {
                 </div>
             </div>
         </header>
-
   );
 }
-
 export default App;
