@@ -11,20 +11,50 @@ const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 
-const REDIS_REST_URL = process.env.REDIS_REST_URL;
+const REDIS_URL = process.env.REDIS_REST_URL;
 const REDIS_TOKEN = process.env.REDIS_TOKEN;
 
-app.get("/score/:player", async (req, res) => {
-    const { player } = req.params;
-    const response = await fetch(`${process.env.REDIS_REST_URL}/get/score:${player}`, {
+app.post("/score", express.json(), async (req, res) => {
+    const { player, score, action } = req.body;
+    console.log(player, score, action);
+
+    if (typeof player !== "number" || typeof score !== "number" || typeof action !== 'string') {
+        return res.status(400).json({ error: "Invalid input" });
+    }
+
+    const response = await fetch(`${REDIS_URL}/set/score:${player}/${score}`, {
+        method: "POST",
         headers: {
-            Authorization: `Bearer ${process.env.REDIS_TOKEN}`,
+            Authorization: `Bearer ${REDIS_TOKEN}`,
         },
     });
 
     const data = await response.json();
-    res.json({ score: Number(data.result) || 0 });
+    console.log("SET result:", data);
+
+    res.json({ status: "success", setResult: data });
 });
+
+
+
+app.get("/score/:player", async (req, res) => {
+    const { player } = req.params;
+
+    const response = await fetch(`${REDIS_URL}/get/score:${player}`, {
+        headers: {
+            Authorization: `Bearer ${REDIS_TOKEN}`,
+        },
+    });
+
+    const data = await response.json();
+
+    if (!data.result) {
+        return res.status(404).json({ error: "Score not found" });
+    }
+
+    res.json({ score: parseInt(data.result, 10) });
+});
+
 
 app.post("/log-event", express.json(), async (req, res) => {
     const { player, score, action} = req.body;
@@ -40,10 +70,10 @@ app.post("/log-event", express.json(), async (req, res) => {
         timestamp: new Date().toISOString(),
     };
 
-    const response = await fetch(`${process.env.REDIS_REST_URL}/lpush/event_log`, {
+    const response = await fetch(`${REDIS_URL}/lpush/event_log`, {
         method: "POST",
         headers: {
-            Authorization: `Bearer ${process.env.REDIS_TOKEN}`,
+            Authorization: `Bearer ${REDIS_TOKEN}`,
             "Content-Type": "application/json",
         },
         body: (JSON.stringify(event)) // double-stringify for Redis REST
@@ -54,9 +84,9 @@ app.post("/log-event", express.json(), async (req, res) => {
 });
 
 app.get("/latest-event", async (req, res) => {
-    const response = await fetch(`${process.env.REDIS_REST_URL}/lrange/event_log/0/0`, {
+    const response = await fetch(`${REDIS_URL}/lrange/event_log/0/0`, {
         headers: {
-            Authorization: `Bearer ${process.env.REDIS_TOKEN}`,
+            Authorization: `Bearer ${REDIS_TOKEN}`,
         },
     });
 
