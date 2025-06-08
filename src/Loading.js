@@ -12,7 +12,7 @@ function Loading() {
 
     async function checkAwake() {
         try {
-            const res = await fetch("http://localhost:3001/health");
+            const res = await fetch("https://my-cows-726n.onrender.com/health");
             const data = await res.json();
             console.log(data);
             return res.status; // This is the HTTP status (e.g., 200 or 500)
