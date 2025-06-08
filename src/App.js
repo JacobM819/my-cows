@@ -103,6 +103,7 @@ function App() {
             document.getElementById("box-1").classList.add("hide-box");
             document.getElementById("box-2").classList.remove("hide-box");
         }
+        document.getElementById("hide-select").style.visibility = "hidden";
         console.log(currentPlayer);
         return null;
     }
@@ -110,15 +111,20 @@ function App() {
     return (
         <header className={'d-flex justify-content-center align-items-center'} style={{ height: '100vh' }}>
             <div className={'container'}>
+                <div className={'row mb-3'}>
+                    <div id={'hide-select'} className={'col text-center'}>
+                        <h2>Select a player!</h2>
+                    </div>
+                </div>
             <div className={'row mb-5'}>
                     <div className={'col text-center'} onClick={()=>changeCurrentPlayer(1)}>
-                        <div id={"box-1"} className={"selected"}>
+                        <div id={"box-1"} className={"hide-box selected"}>
                             <h1 className={'name'}>Jacob</h1>
                             <h1>{score1}</h1>
                         </div>
                     </div>
                     <div className={'col text-center'} onClick={()=>changeCurrentPlayer(2)}>
-                        <div id={"box-2"} className={'selected'}>
+                        <div id={"box-2"} className={'hide-box selected'}>
                         <h1 className={'name'} >Trysta</h1>
                         <h1>{score2}</h1>
                         </div>
