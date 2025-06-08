@@ -100,6 +100,25 @@ app.get("/latest-event", async (req, res) => {
     res.json({ event: latestEvent });
 });
 
+app.get("/health", async(req, res) => {
+    try {
+        const response = await fetch(`${REDIS_URL}/ping`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${REDIS_TOKEN}`,
+            }
+        });
+        const data = await response.json();
+        if (data.result === "PONG") {
+            res.status(200).json({status: "ready"});
+        } else {
+            res.status(500).json({status: "waiting"});
+        }
+    } catch (error) {
+        res.status(500).json({ status: "error", message: error.message });
+    }
+})
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

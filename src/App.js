@@ -34,19 +34,14 @@ function App() {
     }
 
     function addCow(player) {
-        try {
-            if (player === 1) {
-                newScore1(score1 + 1);
-                updateScore(currentPlayer, score1 + 1, 'add cow');
-            } else if (player === 2) {
-                newScore2(score2 + 1)
-                updateScore(currentPlayer, score2 + 1, 'add cow');
-            }
-            console.log(currentPlayer)
-            return null;
-        } catch (error) {
-
+        if (player === 1) {
+            newScore1(score1 + 1);
+            updateScore(currentPlayer, score1 + 1, 'add cow');
+        } else if (player === 2) {
+            newScore2(score2 + 1)
+            updateScore(currentPlayer, score2 + 1, 'add cow');
         }
+        return null;
     }
 
     function ripCow(player) {
@@ -54,6 +49,7 @@ function App() {
         updateScore(player, 0, 'kill cows :(')
         return null;
     }
+    
     function performMiracle(player) {
         if (player === 1) {
             newScore1(score1*2);
@@ -136,7 +132,7 @@ function App() {
                             onClick={() => addCow(currentPlayer)}
                             style={{ border: 'none', background: 'none', padding: 0 }}
                         >
-                            <img src="images/cow-icon.png" alt="Add Cow" style={{ width: '80px' }} />
+                            <img src={`${process.env.PUBLIC_URL}/images/cow-icon.png`} alt="Add Cow" style={{ width: '80px' }} />
                         </Button>
                     </div>
                     <div className={'text-center mb-4'}>
@@ -144,7 +140,7 @@ function App() {
                             onClick={() => ripCow(currentPlayer)}
                             style={{ border: 'none', background: 'none', padding: 0 }}
                         >
-                            <img src="images/rip-icon.png" alt="Kill Cow" style={{ width: '80px' }} />
+                            <img src={`${process.env.PUBLIC_URL}/images/rip-icon.png`} alt="Kill Cow" style={{ width: '80px' }} />
                         </Button>
                     </div>
                     <div className={'text-center mb-4'}>
@@ -152,7 +148,7 @@ function App() {
                             onClick={() => addCow(currentPlayer)}
                             style={{ border: 'none', background: 'none', padding: 0 }}
                         >
-                            <img src="images/revive-icon.png" alt="Revive Cow" style={{ width: '70px' }} />
+                            <img src={`${process.env.PUBLIC_URL}/images/revive-icon.png`} alt="Revive Cow" style={{ width: '70px' }} />
                         </Button>
                     </div>
                     <div className={'text-center mb-4'}>
@@ -160,7 +156,7 @@ function App() {
                             onClick={() => performMiracle(currentPlayer)}
                             style={{ border: 'none', background: 'none', padding: 0 }}
                         >
-                            <img src="images/miracle-icon.png" alt="Perform Miracle" style={{ width: '80px' }} />
+                            <img src={`${process.env.PUBLIC_URL}/images/miracle-icon.png`} alt="Perform Miracle" style={{ width: '80px' }} />
                         </Button>
                     </div>
                 </div>
