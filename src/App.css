@@ -28,11 +28,34 @@
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+@media (max-width: 768px) {
+  body {
+    background: url('../public/images/mobile-bg.jpeg') no-repeat center center fixed;
+    background-size: cover;
   }
-  to {
-    transform: rotate(360deg);
-  }
+}
+
+@font-face {
+  font-family: 'DynaPuff';
+  src: url('../public/fonts/DynaPuff-VariableFont_wdth,wght.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.name {
+  font-family: 'DynaPuff';
+  font-weight: 100;
+  font-size: calc(40px + 2vmin);
+}
+
+.selected {
+  background-color: rgba(184, 104, 12, 0.2);
+  border: 3px solid rgb(143, 108, 101);
+  transition: all .1s ease-in-out;
+  border-radius: 20px;
+}
+
+.hide-box {
+  background-color: transparent;
+  border: none;
 }

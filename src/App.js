@@ -1,4 +1,6 @@
 import Button from 'react-bootstrap/Button';
+import $ from 'jquery';
+import 'notifyjs-browser'
 import { useState } from 'react';
 import { useEffect } from 'react';
 import './App.css';
@@ -14,28 +16,37 @@ function App() {
     }, []);
 
     async function fetchInitialScore(player, score, action) {
+        try {
 
-        const res1 = await fetch("http://localhost:3001/score/1");
-        const data1 = await res1.json();
-        console.log(data1);
-        newScore1(data1.score);
+            const res1 = await fetch("http://localhost:3001/score/1");
+            const data1 = await res1.json();
+            console.log(data1);
+            newScore1(data1.score);
 
-        const res2 = await fetch("http://localhost:3001/score/2");
-        const data2 = await res2.json();
-        newScore2(data2.score);
+            const res2 = await fetch("http://localhost:3001/score/2");
+            const data2 = await res2.json();
+            newScore2(data2.score);
+        } catch (error) {
+            $.notify("There was an error fetching the scores :(", "error")
+            console.log(error);
+        }
 
     }
 
     function addCow(player) {
-        if (player === 1) {
-            newScore1(score1+1);
-            updateScore(currentPlayer, score1+1, 'add cow');
-        } else if (player === 2) {
-            newScore2(score2+1)
-            updateScore(currentPlayer, score2+1, 'add cow');
+        try {
+            if (player === 1) {
+                newScore1(score1 + 1);
+                updateScore(currentPlayer, score1 + 1, 'add cow');
+            } else if (player === 2) {
+                newScore2(score2 + 1)
+                updateScore(currentPlayer, score2 + 1, 'add cow');
+            }
+            console.log(currentPlayer)
+            return null;
+        } catch (error) {
+
         }
-        console.log(currentPlayer)
-        return null;
     }
 
     function ripCow(player) {
@@ -44,7 +55,6 @@ function App() {
         return null;
     }
     function performMiracle(player) {
-
         if (player === 1) {
             newScore1(score1*2);
             updateScore(player, score1*2, 'a miracle!!')
@@ -69,39 +79,30 @@ function App() {
         return (event);
     }
 
-    function GetPlayerScore1() {
-
-        useEffect(() => {
-            fetch("http://localhost:3001/score/1")
-                .then((res) => res.json())
-                .then((data) => newScore1(data.score));
-        }, []);
-
-        return score1;
-    }
-
-    function GetPlayerScore2() {
-
-        useEffect(() => {
-            fetch("http://localhost:3001/score/2")
-                .then((res) => res.json())
-                .then((data) => newScore2(data.score));
-        }, []);
-
-        return score2;
-    }
-
     const updateScore = async (player, score, action) => {
-        console.log("Update score:", player, score, action);
-        await fetch("http://localhost:3001/score", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({player, score, action})
-        })
+        try {
+            console.log("Update score:", player, score, action);
+            await fetch("http://localhost:3001/score", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({player, score, action})
+            })
+            $.notify("Score updated successfully!", "success");
+        } catch (error) {
+            $.notify("There was en error updating the score", "error");
+            console.log(error);
+        }
     }
 
     function changeCurrentPlayer(playerNum) {
         setCurrentPlayer(playerNum);
+        if (playerNum === 1) {
+            document.getElementById("box-2").classList.add("hide-box");
+            document.getElementById("box-1").classList.remove("hide-box");
+        } else {
+            document.getElementById("box-1").classList.add("hide-box");
+            document.getElementById("box-2").classList.remove("hide-box");
+        }
         console.log(currentPlayer);
         return null;
     }
@@ -111,26 +112,50 @@ function App() {
             <div className={'container'}>
             <div className={'row mb-5'}>
                     <div className={'col text-center'} onClick={()=>changeCurrentPlayer(1)}>
-                        <h1>Jacob</h1>
-                        <h3>{score1}</h3>
+                        <div id={"box-1"} className={"selected"}>
+                            <h1 className={'name'}>Jacob</h1>
+                            <h1>{score1}</h1>
+                        </div>
                     </div>
                     <div className={'col text-center'} onClick={()=>changeCurrentPlayer(2)}>
-                        <h1>Trysta</h1>
-                        <h3>{score2}</h3>
+                        <div id={"box-2"} className={'selected'}>
+                        <h1 className={'name'} >Trysta</h1>
+                        <h1>{score2}</h1>
+                        </div>
                     </div>
                 </div>
                 <div className={'row g-0'}>
-                    <div className={'col-2 text-center'}>
-                        <Button variant={'primary'} onClick={()=>addCow(currentPlayer)}>Cow</Button>
+                    <div className="text-center mb-4">
+                        <Button
+                            onClick={() => addCow(currentPlayer)}
+                            style={{ border: 'none', background: 'none', padding: 0 }}
+                        >
+                            <img src="images/cow-icon.png" alt="Add Cow" style={{ width: '80px' }} />
+                        </Button>
                     </div>
-                    <div className={'col text-center'}>
-                        <Button variant={'primary'} onClick={()=>ripCow(currentPlayer)}>RIP</Button>
+                    <div className={'text-center mb-4'}>
+                        <Button
+                            onClick={() => ripCow(currentPlayer)}
+                            style={{ border: 'none', background: 'none', padding: 0 }}
+                        >
+                            <img src="images/rip-icon.png" alt="Kill Cow" style={{ width: '80px' }} />
+                        </Button>
                     </div>
-                    <div className={'col text-center'}>
-                        <Button variant={'primary'} onClick={()=>addCow()}>Revive</Button>
+                    <div className={'text-center mb-4'}>
+                        <Button
+                            onClick={() => addCow(currentPlayer)}
+                            style={{ border: 'none', background: 'none', padding: 0 }}
+                        >
+                            <img src="images/revive-icon.png" alt="Revive Cow" style={{ width: '70px' }} />
+                        </Button>
                     </div>
-                    <div className={'col text-center'}>
-                        <Button variant={'primary'} onClick={()=>performMiracle(currentPlayer)}>Miracle</Button>
+                    <div className={'text-center mb-4'}>
+                        <Button
+                            onClick={() => performMiracle(currentPlayer)}
+                            style={{ border: 'none', background: 'none', padding: 0 }}
+                        >
+                            <img src="images/miracle-icon.png" alt="Perform Miracle" style={{ width: '80px' }} />
+                        </Button>
                     </div>
                 </div>
             </div>
