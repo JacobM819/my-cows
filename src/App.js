@@ -18,12 +18,12 @@ function App() {
     async function fetchInitialScore(player, score, action) {
         try {
 
-            const res1 = await fetch("http://localhost:3001/score/1");
+            const res1 = await fetch("https://my-cows-726n.onrender.com/score/1");
             const data1 = await res1.json();
             console.log(data1);
             newScore1(data1.score);
 
-            const res2 = await fetch("http://localhost:3001/score/2");
+            const res2 = await fetch("https://my-cows-726n.onrender.com/score/2");
             const data2 = await res2.json();
             newScore2(data2.score);
         } catch (error) {
@@ -69,7 +69,7 @@ function App() {
         const [event, setEvent] = useState(null);
 
         useEffect(() => {
-            fetch("http://localhost:3001/latest-event")
+            fetch("https://my-cows-726n.onrender.com/latest-event")
                 .then((res) => res.json())
                 .then((data) => setEvent(data.event))
                 .catch((err) => console.error("Failed to fetch event:", err));
@@ -82,7 +82,7 @@ function App() {
     const updateScore = async (player, score, action) => {
         try {
             console.log("Update score:", player, score, action);
-            await fetch("http://localhost:3001/score", {
+            await fetch("https://my-cows-726n.onrender.com/score", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({player, score, action})
