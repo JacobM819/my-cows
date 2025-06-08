@@ -1,0 +1,19 @@
+{
+  "files": {
+    "main.css": "/my-cows/static/css/main.e939b752.css",
+    "main.js": "/my-cows/static/js/main.a28eb7a3.js",
+    "static/js/885.f975ca38.chunk.js": "/my-cows/static/js/885.f975ca38.chunk.js",
+    "static/js/453.b9438cd1.chunk.js": "/my-cows/static/js/453.b9438cd1.chunk.js",
+    "static/media/DynaPuff-VariableFont_wdth,wght.ttf": "/my-cows/static/media/DynaPuff-VariableFont_wdth,wght.8e7f33764104f9ee7c07.ttf",
+    "static/media/mobile-bg.jpeg": "/my-cows/static/media/mobile-bg.5a0f6c0357d85e54dcd2.jpeg",
+    "index.html": "/my-cows/index.html",
+    "main.e939b752.css.map": "/my-cows/static/css/main.e939b752.css.map",
+    "main.a28eb7a3.js.map": "/my-cows/static/js/main.a28eb7a3.js.map",
+    "885.f975ca38.chunk.js.map": "/my-cows/static/js/885.f975ca38.chunk.js.map",
+    "453.b9438cd1.chunk.js.map": "/my-cows/static/js/453.b9438cd1.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e939b752.css",
+    "static/js/main.a28eb7a3.js"
+  ]
+}
