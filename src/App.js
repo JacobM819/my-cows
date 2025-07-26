@@ -9,6 +9,7 @@ function App() {
     const [currentPlayer, setCurrentPlayer] = useState(null);
     const [score1, newScore1] = useState();
     const [score2, newScore2] = useState();
+    const players = {1:"Jacob", 2:"Trysta"};
 
     useEffect(() => {
         console.log("Data fetched!");
@@ -34,29 +35,34 @@ function App() {
     }
 
     function addCow(player) {
+        const message = players[player]+" scored a cow!";
         if (player === 1) {
             newScore1(score1 + 1);
-            updateScore(currentPlayer, score1 + 1, 'add cow');
+            updateScore(currentPlayer, score1 + 1, message);
         } else if (player === 2) {
             newScore2(score2 + 1)
-            updateScore(currentPlayer, score2 + 1, 'add cow');
+            updateScore(currentPlayer, score2 + 1, message);
         }
         return null;
     }
 
     function ripCow(player) {
+        const other_player = player===1? "Trysta" : "Jacob";
+        const message = `${other_player} murdered ${players[player]}'s cows!`;
+
         player===1 ? newScore1(0) : newScore2(0);
-        updateScore(player, 0, 'kill cows :(')
+        updateScore(player, 0, message)
         return null;
     }
-    
+
     function performMiracle(player) {
+        const message = players[player]+" performed a miracle!!";
         if (player === 1) {
             newScore1(score1*2);
-            updateScore(player, score1*2, 'a miracle!!')
+            updateScore(player, score1*2, message)
         } else {
             newScore2(score2*2)
-            updateScore(player, score2*2, 'a miracle!!')
+            updateScore(player, score2*2, message)
         }
         return null;
     }
@@ -83,7 +89,7 @@ function App() {
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({player, score, action})
             })
-            $.notify("Score updated successfully!", "success");
+            $.notify(action, "success");
         } catch (error) {
             $.notify("There was en error updating the score", "error");
             console.log(error);
