@@ -18,6 +18,8 @@
 .env.test.local
 .env.production.local
 server/.env
+.env
+nginx.conf
 
 npm-debug.log*
 yarn-debug.log*

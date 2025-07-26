@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  my-cows:
+    build: .
+    container_name: my-cows
+    restart: unless-stopped
+    expose:
+      - "${PORT}"
+    networks:
+      - jakeys_lab
+
+networks:
+  jakeys_lab:
+    external: true
