@@ -3,13 +3,50 @@ import express from "express";
 import cors from "cors";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
+import sqlite3 from "sqlite3";
 
 dotenv.config();
 
+// load express
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(cors());
+
+// load sqlite
+const sqlite = sqlite3.verbose()
+const dbPath = process.env.DB_PATH || './data/scores.sqlite'
+
+const db = new sqlite.Database(dbPath, (err) => {
+  if (err) {
+               console.error('Could not connect to database', err);
+  } else {
+    console.log('Connected to the SQLite database.');
+    
+    // Create the table
+    db.run(`
+      CREATE TABLE IF NOT EXISTS players (
+         id INTEGER PRIMARY KEY AUTOINCREMENT,
+         name TEXT,
+         score INTEGER
+      )
+    `, (err) => {
+      if (err) {
+        console.error('Error creating table:', err);
+      } else {
+        console.log('Players table is ready.');
+        db.run(`
+          INSERT INTO players (name, score)
+          VALUES
+           ("Jake", 0),
+           ("Trysta", 0)
+        `, (insertErr) => {
+           if (!insertErr) console.log("Default players added.");
+        });
+      }
+    });
+  }
+});
 
 const REDIS_URL = process.env.REDIS_REST_URL;
 const REDIS_TOKEN = process.env.REDIS_TOKEN;
@@ -22,15 +59,20 @@ app.post("/score", express.json(), async (req, res) => {
         return res.status(400).json({ error: "Invalid input" });
     }
 
-    const response = await fetch(`${REDIS_URL}/set/score:${player}/${score}`, {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${REDIS_TOKEN}`,
-        },
-    });
+   const sql = `
+               UPDATE players
+               SET score = ?
+               WHERE id = ?
+               `;
 
-    const data = await response.json();
-    console.log("SET result:", data);
+   const params = [score, player];
+
+   db.run(sql, params, function(err) {
+      if (err) {
+         res.status(500).json({ error: err.message });
+         return;
+      }
+   });
 
     res.json({ status: "success", setResult: data });
 });

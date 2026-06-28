@@ -7,6 +7,10 @@ services:
     restart: unless-stopped
     expose:
       - "${PORT}"
+    environment:
+      - DB_PATH=/app/data/scores.sqlite
+    volumes:
+      - ./data:/app/data
     networks:
       - jakeys_lab
 
