@@ -1,18 +1,27 @@
-FROM nginx:alpine
+# Using a Multi-Stage docker file so we can 
+# Build the React Frontend
+FROM node:18-alpine AS frontend-builder
+WORKDIR /build-app/frontend
 
-# Working directory
-WORKDIR /usr/share/nginx/html
+# Install dependencies and build the React app
+COPY frontend/package*.json ./
+RUN npm install
+COPY frontend/ ./
+RUN npm run build
 
-# Clean old content
-RUN rm -rf ./*
+# Setup Backend & Serve Everything
+FROM node:18-alpine
+WORKDIR /app
 
-# Copy React build output
-COPY build/ .
+# Copy backend dependencies and code
+COPY backend/package*.json ./
+RUN npm install
+COPY backend/ ./
 
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy the compiled React files from Stage 1 into a public folder inside the backend
+COPY --from=frontend-builder /build-app/frontend/build ./public
 
-EXPOSE ${PORT} 
+EXPOSE 5000
 
-CMD ["nginx", "-g", "daemon off;"]
-
+# Start backend server
+CMD ["node", "server.js"]
