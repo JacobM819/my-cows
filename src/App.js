@@ -11,14 +11,16 @@ function App() {
   const [score2, newScore2] = useState();
   const players = { 1: "Jacob", 2: "Trysta" };
 
+   const BASE_URL = "localhost:3001"
+
   useEffect(() => {
     console.log("Data fetched!");
-    fetchInitialScore(2, 0, "create");
+    fetchInitialScores(2, 0, "create");
   }, []);
 
-  async function fetchInitialScore(player, score, action) {
+  async function fetchInitialScores() {
     try {
-      const res1 = await fetch("https://my-cows-726n.onrender.com/score/1");
+      const res1 = await fetch(`${BASE_URL}/score/1`);
       const data1 = await res1.json();
       console.log(data1);
       newScore1(data1.score);
@@ -69,7 +71,7 @@ function App() {
     const [event, setEvent] = useState(null);
 
     useEffect(() => {
-      fetch("https://my-cows-726n.onrender.com/latest-event")
+      fetch(`${BASE_URL}/latest-event`)
         .then((res) => res.json())
         .then((data) => setEvent(data.event))
         .catch((err) => console.error("Failed to fetch event:", err));
@@ -82,11 +84,12 @@ function App() {
   const updateScore = async (player, score, action) => {
     try {
       console.log("Update score:", player, score, action);
-      await fetch("https://my-cows-726n.onrender.com/score", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ player, score, action }),
-      });
+      await fetch(`${BASE_URL}/score`, {
+           method: "POST",
+           headers: { "Content-Type": "application/json" },
+           body: JSON.stringify({ player, score, action }),
+         });
+      
       $.notify(action, "success");
     } catch (error) {
       $.notify("There was en error updating the score", "error");

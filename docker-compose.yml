@@ -1,19 +1,20 @@
-version: '3'
-
 services:
-  my-cows:
-    build: .
-    container_name: my-cows
+  my-cows-api:
+    build: ./server
+    container_name: my-cows-api
     restart: unless-stopped
-    expose:
-      - "${PORT}"
+    ports:
+      - "5000:5000"
     environment:
       - DB_PATH=/app/data/scores.sqlite
     volumes:
       - ./data:/app/data
-    networks:
-      - jakeys_lab
 
-networks:
-  jakeys_lab:
-    external: true
+  my-cows-ui:
+    build: .
+    container_name: my-cows-ui
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    depends_on:
+      - my-cows-api
