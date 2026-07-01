@@ -5,12 +5,17 @@ import fetch from "node-fetch";
 import dotenv from "dotenv";
 import sqlite3 from "sqlite3";
 import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
 dotenv.config();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 // load express
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 
@@ -88,27 +93,28 @@ app.post("/score", express.json(), async (req, res) => {
   res.json({ status: "success" });
 });
 
-app.get("/score/:player", async (req, res) => {
-  const { playerId } = req.params;
+app.get("/score/:player", (req, res) => {
+  const { player } = req.params;
+
+  const playerId = parseInt(player, 10);
 
   if (isNaN(playerId)) {
     return res.status(400).json({ error: "Invalid input" });
   }
 
-  const sql = `SELECT score FROM players WHERE id = ${playerId}`;
+  const sql = `SELECT score FROM players WHERE id = ?`;
 
-  db.get(sql, (err, row) => {
+  db.get(sql, [playerId], (err, row) => {
     if (err) {
-      res.status(500).json({ error: err.message });
+      return res.status(500).json({ error: err.message });
     }
 
-     if (!row) {
-      res.status(404).json({ error: "Score not found" });
-     }
+    if (!row) {
+      return res.status(404).json({ error: "Score not found" });
+    }
+
+    res.json({ status: "success", score: row.score });
   });
-
-
-  res.json({ status: "success", score: row.score });
 });
 
 app.post("/log-event", express.json(), async (req, res) => {

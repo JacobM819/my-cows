@@ -1,27 +1,34 @@
-# Using a Multi-Stage docker file so we can 
-# Build the React Frontend
+# ==========================================
+# STAGE 1: Build the React Frontend
+# ==========================================
 FROM node:18-alpine AS frontend-builder
 WORKDIR /build-app/frontend
 
-# Install dependencies and build the React app
 COPY frontend/package*.json ./
 RUN npm install
 COPY frontend/ ./
 RUN npm run build
 
-# Setup Backend & Serve Everything
+# ==========================================
+# STAGE 2: Setup Backend & Serve Everything
+# ==========================================
 FROM node:18-alpine
 WORKDIR /app
 
-# Copy backend dependencies and code
+# 1. Install the C++ build tools Alpine needs to compile SQLite natively
+RUN apk add --no-cache python3 make g++
+
 COPY backend/package*.json ./
-RUN npm install
+
+# 2. THE SILVER BULLET: Force npm to ignore downloaded binaries and compile from scratch
+RUN npm install --build-from-source
+
+# 3. Copy the rest of the backend code
 COPY backend/ ./
 
-# Copy the compiled React files from Stage 1 into a public folder inside the backend
+# 4. Bring in the compiled frontend
 COPY --from=frontend-builder /build-app/frontend/build ./public
 
 EXPOSE 5000
 
-# Start backend server
-CMD ["node", "server.js"]
+CMD ["npm", "start"]
