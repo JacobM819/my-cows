@@ -1,8 +1,7 @@
 import Button from "react-bootstrap/Button";
-import $ from "jquery";
-import "notifyjs-browser";
 import { useState } from "react";
 import { useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
 import "./App.css";
 
 function App() {
@@ -11,7 +10,7 @@ function App() {
   const [score2, newScore2] = useState();
   const players = { 1: "Jacob", 2: "Trysta" };
 
-   const BASE_URL = "localhost:3001"
+  const BASE_URL = "http://localhost:8081";
 
   useEffect(() => {
     console.log("Data fetched!");
@@ -25,11 +24,11 @@ function App() {
       console.log(data1);
       newScore1(data1.score);
 
-      const res2 = await fetch("https://my-cows-726n.onrender.com/score/2");
+      const res2 = await fetch(`${BASE_URL}/score/2`);
       const data2 = await res2.json();
       newScore2(data2.score);
     } catch (error) {
-      $.notify("There was an error fetching the scores :(", "error");
+      toast.error("There was an error fetching the scores :(");
       console.log(error);
     }
   }
@@ -85,14 +84,16 @@ function App() {
     try {
       console.log("Update score:", player, score, action);
       await fetch(`${BASE_URL}/score`, {
-           method: "POST",
-           headers: { "Content-Type": "application/json" },
-           body: JSON.stringify({ player, score, action }),
-         });
-      
-      $.notify(action, "success");
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ player, score, action }),
+      });
+
+      toast.success(action);
+
     } catch (error) {
-      $.notify("There was en error updating the score", "error");
+
+      toast.error("There was an error updating the score");
       console.log(error);
     }
   };
@@ -193,6 +194,7 @@ function App() {
           </div>
         </div>
       </div>
+     <ToastContainer/>
     </header>
   );
 }

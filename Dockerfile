@@ -1,6 +1,3 @@
-# ==========================================
-# STAGE 1: Build the React Frontend
-# ==========================================
 FROM node:18-alpine AS frontend-builder
 WORKDIR /build-app/frontend
 
@@ -9,9 +6,6 @@ RUN npm install
 COPY frontend/ ./
 RUN npm run build
 
-# ==========================================
-# STAGE 2: Setup Backend & Serve Everything
-# ==========================================
 FROM node:18-alpine
 WORKDIR /app
 
@@ -20,13 +14,12 @@ RUN apk add --no-cache python3 make g++
 
 COPY backend/package*.json ./
 
-# 2. THE SILVER BULLET: Force npm to ignore downloaded binaries and compile from scratch
+# Force npm to ignore downloaded binaries and compile from scratch because weird dependency issues
 RUN npm install --build-from-source
 
 # 3. Copy the rest of the backend code
 COPY backend/ ./
 
-# 4. Bring in the compiled frontend
 COPY --from=frontend-builder /build-app/frontend/build ./public
 
 EXPOSE 5000
