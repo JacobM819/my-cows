@@ -1,7 +1,7 @@
 services:
-  my-cows-app:
+  my-cows:
     build: .
-    container_name: my-cows-app
+    container_name: my-cows
     restart: unless-stopped
     ports:
       - "8081:5000"
@@ -10,3 +10,9 @@ services:
       - PORT=5000
     volumes:
       - ./data:/app/data
+    networks:
+      - jakeys_lab
+
+networks:
+  jakeys_lab:
+    external: true
